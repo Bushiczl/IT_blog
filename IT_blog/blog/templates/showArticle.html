@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if not isArticle %}
+        404
+    {% else %}
+        {% if not isOwner %}
+            <a href="{% url 'home' ownerId %}">{{ ownerName }}</a>的文章<br>
+        {% endif %}
+        {{ title }}<br>
+        {% autoescape off %}
+            {{ content }}
+        {% endautoescape %}
+        <br>
+        {% if isOwner %}
+            <a href="{% url 'home' ownerId %}">修改</a>
+        {% endif %}
+        <br>
+        最后修改于{{ date }}
+    {% endif %}
+{% endblock %}

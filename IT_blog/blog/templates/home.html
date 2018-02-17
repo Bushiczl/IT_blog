@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if not isUser %}
+        404
+    {% else %}
+        {% if isOwner %}
+            <a href="{% url 'newArticle' %}">写新文章</a>
+        {% else %}
+            这是{{ ownerName }}的博客
+        {% endif %}
+        <br>
+        {% if haveArticles %}
+            {% for a in articles %}
+                <br>
+                <a href="{% url 'showArticle' a.id %}">{{ a.title }}</a>
+            {% endfor %}
+        {% else %}
+            这位用户还没写任何文章
+        {% endif %}
+    {% endif %}
+{% endblock %}

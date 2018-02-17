@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method='post'>
+        {% csrf_token %}
+        用户名:<input type="text" maxlength="30" name="username"><br>
+        密码:<input type="password" maxlength="30" name="password"><br>
+        <input type="submit" value="登录">
+    </form>
+    {{ message }}
+    <a href="{% url 'register' %}">注册</a>
+{% endblock %}
