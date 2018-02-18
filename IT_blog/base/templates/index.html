@@ -1,4 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    {% for a in articles %}
+        <br>
+        <a href="{% url 'showArticle' a.id %}">{{ a.title }}</a>
+    {% endfor %}
 {% endblock %}

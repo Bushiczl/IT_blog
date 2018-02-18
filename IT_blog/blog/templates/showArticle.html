@@ -13,7 +13,7 @@
         {% endautoescape %}
         <br>
         {% if isOwner %}
-            <a href="{% url 'home' ownerId %}">修改</a>
+            <a href="{% url 'change' articleId %}">修改</a>
         {% endif %}
         <br>
         最后修改于{{ date }}

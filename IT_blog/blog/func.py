@@ -42,6 +42,16 @@ def getArticleFromOwnerId(ownerId):
         back['pass'] = False
     return back
 
+def getAllArticle():
+    back = {}
+    try:
+        get = article.objects.all().order_by('-date')
+        back['pass'] = True
+        back['get'] = get
+    except:
+        back['pass'] = False
+    return back
+
 
 def extentArticleId(articleId):
     back = {}
@@ -55,4 +65,18 @@ def extentArticleId(articleId):
         back['id'] = articleId
     except:
         back['isArticle'] = False
+    return back
+
+
+def changeArticle(title, content, articleId):
+    back = {}
+    back['str'] = ""
+    back['pass'] = False
+    try:
+        datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+        article.objects.filter(id=articleId).update(content=content, title=title, date=datetime)
+        back['str'] = "修改成功"
+        back['pass'] = True
+    except:
+        back['str'] = "这篇文章可能已被删除"
     return back
