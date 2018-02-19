@@ -13,9 +13,22 @@
         {% endautoescape %}
         <br>
         {% if isOwner %}
-            <a href="{% url 'change' articleId %}">修改</a>
+            <a href="{% url 'changeArticle' articleId %}">修改</a>
+            <a href="{% url 'deleteArticle' articleId %}">删除</a>
         {% endif %}
         <br>
         最后修改于{{ date }}
+
+        评论：<br>
+        {% for comment in comments %}
+            {{ comment.owner }}:{{ comment.comment }}<br>
+        {% endfor %}
+        新增评论:
+        <form method="post">
+            {% csrf_token %}
+            {{ form.comment }}
+            <input type="submit" value="提交">
+        </form>
+        {{ message }}
     {% endif %}
 {% endblock %}

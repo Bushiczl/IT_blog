@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from django.urls import reverse
 import logging
 from user import func as user_func
-from .models import article
-from .forms import formArticle
+from blog import models as blog_models
+from blog import forms as blog_forms
 from blog import func as blog_func
 
 def home(request, ownerId):
@@ -56,7 +56,7 @@ def newArticle(request):
         return redirect(reverse('index'))
 
     if request.method == 'POST':
-        form = formArticle(request.POST)
+        form = blog_forms.formArticle(request.POST)
         if form.is_valid():
             owner = guestId
             title = form.cleaned_data['title']
@@ -71,7 +71,7 @@ def newArticle(request):
         else:
             list['message'] = u"输入数据不合法"
     else:
-        form = formArticle()
+        form = blog_forms.formArticle()
 
     list['form'] = form
     return render(request, 'newArticle.html', list)
@@ -85,8 +85,11 @@ def showArticle(request, articleId):
     list['isArticle'] = False
     list['title'] = ""
     list['content'] = ""
-    list["date"] = ""
-    list["articleId"] = articleId
+    list['date'] = ""
+    list['articleId'] = articleId
+    list['form'] = None
+    list['comments'] = None
+    list['message'] = ""
     if 'id' in request.session:
         guestId = request.session['id']
     else:
@@ -94,6 +97,23 @@ def showArticle(request, articleId):
 
     back = blog_func.extentArticleId(articleId)
     if back['isArticle']:
+        if request.method == 'POST':
+            form = blog_forms.formComment(request.POST)
+            if form.is_valid():
+                try:
+                    back = user_func.extentId(guestId)
+                    if back['isUser']:
+                        owner = back['username']
+                    else:
+                        raise RuntimeError()
+                except:
+                    owner = u"访客"
+                comment = form.cleaned_data['comment']
+                back = blog_func.addComment(owner, comment, articleId)
+                if back['pass']:
+                    return HttpResponse("<script>location=location</script>")
+                else:
+                    list['message'] = u"发送评论失败"
         list['isArticle'] = True
         owner = user_func.extentId(back['owner'])
         list['ownerName'] = owner['username']
@@ -103,6 +123,14 @@ def showArticle(request, articleId):
         list['content'] = back['content']
         list['ownerId'] = owner['id']
         list["date"] = back['date']
+        form = blog_forms.formComment()
+        list['form'] = form
+
+        back = blog_func.getCommentFromArticleId(articleId)
+        if back['pass']:
+            list['comments'] = back['get']
+        else:
+            list['comments'] = {}
 
     return render(request, 'showArticle.html', list)
 
@@ -122,7 +150,7 @@ def changeArticle(request, articleId):
         return HttpResponse(u"你不能修改这篇文章")
 
     if request.method == 'POST':
-        form = formArticle(request.POST)
+        form = blog_forms.formArticle(request.POST)
         logging.debug(request.POST)
         if form.is_valid():
             title = form.cleaned_data['title']
@@ -137,7 +165,28 @@ def changeArticle(request, articleId):
         else:
             list['message'] = u"输入数据不合法"
     else:
-        form = formArticle({'title': back['title'], 'content': back['content']})
+        form = blog_forms.formArticle({'title': back['title'], 'content': back['content']})
 
     list['form'] = form
     return render(request, 'newArticle.html', list)
+
+
+def deleteArticle(request, articleId):
+    if 'id' in request.session:
+        guestId = request.session['id']
+    else:
+        return HttpResponse('404')
+
+    back = blog_func.extentArticleId(articleId)
+    if not back['isArticle']:
+        return HttpResponse(u"文章404")
+    owner = back['owner']
+    if owner != guestId:
+        return HttpResponse(u"你不能删除这篇文章")
+
+    back = blog_func.deleteArticle(articleId)
+
+    if back['pass']:
+        return redirect(reverse('home', args=(owner,)))
+    else:
+        return HttpResponse(u"删除失败")

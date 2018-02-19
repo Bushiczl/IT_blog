@@ -30,7 +30,8 @@ urlpatterns = [
     url(r'^home/(\d+)/$', blog_views.home, name='home'),
     url(r'^newArticle/$', blog_views.newArticle, name='newArticle'),
     url(r'^article/(\d+)/$', blog_views.showArticle, name='showArticle'),
-    url(r'^change/(\d+)/$', blog_views.changeArticle, name='change'),
+    url(r'^change/(\d+)/$', blog_views.changeArticle, name='changeArticle'),
+    url(r'^deleteArticle/(\d+)/$', blog_views.deleteArticle, name='deleteArticle'),
 
     url(r'ckeditor/', include('ckeditor_uploader.urls')),
     url(r'^field/getModel/$', field_views.getModel, name='1'),
