@@ -3,8 +3,8 @@
 {% block content %}
     <form method='post'>
         {% csrf_token %}
-        用户名:<input type="text" maxlength="30" name="username"><br>
-        密码:<input type="password" maxlength="30" name="password"><br>
+        用户名:<input type="text" maxlength="30" name="username" value="{{ inputUsername }}"><br>
+        密码:<input type="password" maxlength="30" name="password" value="{{ inputPassword }}"><br>
         确认密码:<input type="password" maxlength="30" name="passwordConfirm"><br>
         <input type="submit" value="确认注册">
     </form>

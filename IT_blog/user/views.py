@@ -8,58 +8,68 @@ import logging
 
 
 def register(request):
+    if 'username' in request.session:
+        return redirect(reverse('index'))
+    list = {}
+    list['message'] = ""
+    list['inputUsername'] = ""
+    list['inputPassword'] = ""
     if request.method == 'POST':
         try:
             username = str(request.POST['username'])
+            list['inputUsername'] = username
             password = str(request.POST['password'])
+            list['inputPassword'] = password
             passwordConfirm = str(request.POST['passwordConfirm'])
             result = func.judgeUsername(username) and func.judgePassword(password)
             if not result:
                 raise RuntimeError()
+            try:
+                get = user.objects.get(username=username)
+                list['message'] = u"该用户名已被注册"
+                logging.debug(get.username)
+            except:
+                if not password == passwordConfirm:
+                    list['message'] = u"两次输入的密码不一致"
+                else:
+                    newuser = user(username=username, password=password)
+                    newuser.save()
+                    return redirect(reverse('login'))
         except RuntimeError:
-            return render(request, 'register.html', {'message': u"请用数字、字母、下划线作为用户名密码，并不少于六位不大于三十位"})
-        try:
-            get = user.objects.get(username=username)
-            logging.debug(get.username)
-        except:
-            if not password == passwordConfirm:
-                return render(request, 'register.html', {'message': u"两次输入的密码不一致"})
-            else:
-                newuser = user(username=username, password=password)
-                newuser.save()
-                return redirect(reverse('login'))
-        return render(request, 'register.html', {'message': u"该用户名已被注册"})
-    if 'username' in request.session:
-        return redirect(reverse('index'))
-    else:
-        return render(request, 'register.html', {'message': ""})
+            list['message'] = u"请用数字、字母、下划线作为用户名密码，并不少于六位不大于三十位"
+    return render(request, 'register.html', list)
 
 
 def login(request):
+    if 'username' in request.session:
+        return redirect(reverse('index'))
+    list = {}
+    list['message'] = ""
+    list['inputUsername'] = ""
+    list['inputPassword'] = ""
     if request.method == 'POST':
         try:
             username = str(request.POST['username'])
+            list['inputUsername'] = username
             password = str(request.POST['password'])
+            list['inputPassword'] = password
             result = func.judgeUsername(username) and func.judgePassword(password)
             if not result:
                 raise RuntimeError()
+            try:
+                get = user.objects.get(username=username)
+                logging.debug(get.username)
+                if password != get.password:
+                    raise RuntimeError()
+                request.session['username'] = username
+                request.session['id'] = get.id
+                logging.debug(u'id为' + str(get.id) + u'的用户登录了')
+                return redirect(reverse('index'))
+            except:
+                list['message'] = u"用户名或密码不正确"
         except RuntimeError:
-            return render(request, 'login.html', {'message': u"用户名或密码不正确"})
-        try:
-            get = user.objects.get(username=username)
-            logging.debug(get.username)
-            if password != get.password:
-                raise RuntimeError()
-            request.session['username'] = username
-            request.session['id'] = get.id
-            logging.debug(u'id为' + str(get.id) + u'的用户登录了')
-        except:
-            return render(request, 'login.html', {'message': u"用户名或密码不正确"})
-        return redirect(reverse('index'))
-    if 'username' in request.session:
-        return redirect(reverse('index'))
-    else:
-        return render(request, 'login.html', {'messages': ""})
+            list['message'] = u"用户名或密码不正确"
+    return render(request, 'login.html', list)
 
 def logout(request):
     try:
