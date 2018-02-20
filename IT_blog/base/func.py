@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.core.paginator import Paginator
+from base import var as base_var
 
 def judgeStringWhite(input, chSet, maxlen = -1):
     if maxlen != -1:
@@ -21,3 +23,17 @@ def judgeStringBlack(input, chSet, maxlen = -1):
         if ch in chSet:
             return False
     return True
+
+
+def dividePage(reqGetList, input):
+    back = {}
+    back['pass'] = False
+    try:
+        p = Paginator(input, base_var.pageMaxnum)
+        back['pageCount'] = p.num_pages
+        index = int(reqGetList['page'])
+        back['output'] = p.page(index).object_list
+        back['pass'] = True
+    except:
+        back['pass'] = False
+    return back

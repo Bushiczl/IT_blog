@@ -6,6 +6,7 @@ from user import func as user_func
 from blog import models as blog_models
 from blog import forms as blog_forms
 from blog import func as blog_func
+from base import func as base_func
 
 def home(request, ownerId):
     list = {}
@@ -38,8 +39,14 @@ def home(request, ownerId):
     back = blog_func.getArticleFromOwnerId(ownerId)
 
     if back['pass']:
-        list['articles'] = back['get']
         list['haveArticles'] =True
+        back = base_func.dividePage(request.GET, back['get'])
+        try:
+            list['pageCount'] = back['pageCount']
+        except:
+            list['pageCount'] = 1
+        if back['pass']:
+            list['articles'] = back['output']
 
     return render(request, 'home.html', list)
 
@@ -128,7 +135,13 @@ def showArticle(request, articleId):
 
         back = blog_func.getCommentFromArticleId(articleId)
         if back['pass']:
-            list['comments'] = back['get']
+            back = base_func.dividePage(request.GET, back['get'])
+            try:
+                list['pageCount'] = back['pageCount']
+            except:
+                list['pageCount'] = 1
+            if back['pass']:
+                list['comments'] = back['output']
         else:
             list['comments'] = {}
 

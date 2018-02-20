@@ -1,0 +1,55 @@
+
+<br>
+<button  onclick="prePage()">上一页</button>
+<button  onclick="nextPage()">下一页</button>
+第<input type="number" id="pageNum">页
+<button onclick="jmpPage()">跳转</button>
+<br>
+<script>
+    function GetRequest() {
+        var url = location.search; //获取url中"?"符后的字串
+        var theRequest = {};
+        var strs;
+        if (url.indexOf("?") !== -1) {
+            var str = url.substr(1);
+            strs = str.split("&");
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+            }
+        }
+       return theRequest;
+    }
+
+    function isNum(val) {
+        if (val === "" || val == null) {
+            return false;
+        }
+        var reg = /^[1-9]\d*$/;
+        return reg.test(val);
+    }
+
+    var Request = new GetRequest();
+    var page = Request['page'];
+    if (!isNum(page)) {
+        window.location.href = location.origin + location.pathname + "?page=1";
+    }
+    if (page > {{ pageCount }}) {
+        window.location.href = location.origin + location.pathname + "?page={{ pageCount }}";
+    }
+    document.getElementById("pageNum").value = page;
+    function prePage() {
+        if (page === "1")
+            alert("已经是第一页");
+        else
+            window.location.href = location.origin + location.pathname + "?page=" + (parseInt(page) - 1).toString();
+    }
+    function nextPage() {
+        if (page === "{{ pageCount }}")
+            alert("已经是最后一页");
+        else
+            window.location.href = location.origin + location.pathname + "?page=" + (parseInt(page) + 1).toString();
+    }
+    function jmpPage() {
+        window.location.href = location.origin + location.pathname + "?page=" + (document.getElementById("pageNum").value).toString();
+    }
+</script>

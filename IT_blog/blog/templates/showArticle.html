@@ -23,6 +23,7 @@
         {% for comment in comments %}
             {{ comment.owner }}:{{ comment.comment }}<br>
         {% endfor %}
+        {% include 'pageButtom.html' %}
         新增评论:
         <form method="post">
             {% csrf_token %}

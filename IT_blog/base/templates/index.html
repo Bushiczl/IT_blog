@@ -5,4 +5,5 @@
         <br>
         <a href="{% url 'showArticle' a.id %}">{{ a.title }}</a>
     {% endfor %}
+    {% include 'pageButtom.html' %}
 {% endblock %}
