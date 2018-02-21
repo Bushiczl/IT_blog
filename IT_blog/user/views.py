@@ -5,6 +5,7 @@ from django.urls import reverse
 from user import func
 from .models import user
 import logging
+import hashlib
 
 
 def register(request):
@@ -32,7 +33,8 @@ def register(request):
                 if not password == passwordConfirm:
                     list['message'] = u"两次输入的密码不一致"
                 else:
-                    newuser = user(username=username, password=password)
+                    md5 = hashlib.md5(password.encode('utf-8')).hexdigest()
+                    newuser = user(username=username, password=md5)
                     newuser.save()
                     return redirect(reverse('login'))
         except RuntimeError:
@@ -59,7 +61,8 @@ def login(request):
             try:
                 get = user.objects.get(username=username)
                 logging.debug(get.username)
-                if password != get.password:
+                md5 = hashlib.md5(password.encode('utf-8')).hexdigest()
+                if md5 != get.password:
                     raise RuntimeError()
                 request.session['username'] = username
                 request.session['id'] = get.id

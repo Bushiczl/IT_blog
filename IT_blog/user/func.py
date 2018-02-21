@@ -3,6 +3,8 @@ from base import var as b_v
 from base import func as base_func
 from .models import user
 import logging
+import hashlib
+
 
 def judgeUsername(input):
     str = input
