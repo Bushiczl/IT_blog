@@ -46,7 +46,7 @@ def register(request):
                     newuser = user(username=username, password=md5)
                     newuser.save()
                     return redirect(reverse('login'))
-        except RuntimeError:
+        except:
             pass
     return render(request, 'register.html', list)
 
@@ -89,9 +89,10 @@ def login(request):
                 return redirect(reverse('index'))
             except:
                 pass
-        except RuntimeError:
+        except:
             pass
     return render(request, 'login.html', list)
+
 
 def logout(request):
     try:
@@ -103,3 +104,46 @@ def logout(request):
     except:
         pass
     return HttpResponse('<script>window.location.href = document.referrer;</script>')
+
+
+def changePwd(request):
+    if not 'id' in request.session:
+        return redirect(reverse('index'))
+    else:
+        guestId = request.session['id']
+    list = {}
+    list['message'] = ""
+    list['inputOldPassword'] = ""
+    list['inputNewPassword'] = ""
+    if request.method == 'POST':
+        try:
+            list["message"] = u"未知错误"
+
+            oldPassword = request.POST['oldPassword']
+            logging.debug(u"修改密码输入原密码" + oldPassword)
+            list['inputOldPassword'] = oldPassword
+            newPassword = request.POST['newPassword']
+            logging.debug(u"修改密码输入新密码" + newPassword)
+            list['inputNewPassword'] = newPassword
+            back = func.judgePassword(newPassword)
+            if not back:
+                list['message'] = u"新密码不符合规范"
+                raise RuntimeError()
+            confirmPassword = request.POST['confirmPassword']
+            logging.debug(u"修改密码输入确认密码" + confirmPassword)
+            realPassword = user.objects.get(id=guestId).password
+            logging.debug(u"修改密码真密码" + realPassword)
+            oldPassword = hashlib.md5(oldPassword.encode('utf-8')).hexdigest()
+            if oldPassword != realPassword:
+                list['message'] = u"旧密码错误"
+                raise RuntimeError()
+            if newPassword != confirmPassword:
+                list['message'] = u"两次输入的新密码不一致"
+                raise RuntimeError()
+            newPassword = hashlib.md5(newPassword.encode('utf-8')).hexdigest()
+            logging.debug(u"修改密码md5新密码" + newPassword)
+            user.objects.filter(id=guestId).update(password=newPassword)
+            list['message'] = u"修改成功"
+        except:
+            pass
+    return render(request, 'changePwd.html', list)

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method='post'>
+        {% csrf_token %}
+        旧密码:<input type="password" maxlength="30" name="oldPassword" value="{{ inputOldPassword }}"><br>
+        新密码:<input type="password" maxlength="30" name="newPassword" value="{{ inputNewPassword }}"><br>
+        确认新密码:<input type="password" maxlength="30" name="confirmPassword"><br>
+        <input type="submit" value="提交">
+    </form>
+    {{ message }}
+{% endblock %}

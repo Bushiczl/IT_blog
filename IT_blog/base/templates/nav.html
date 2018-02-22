@@ -4,6 +4,7 @@
     {% if login %}
         <a href="{% url 'logout' %}">退出</a>
         <a href="{% url 'home' id %}">个人主页</a>
+        <a href="{% url 'changePwd' %}">修改密码</a>
     {% else %}
         <a href="{% url 'login' %}">登录</a>
     {% endif %}
