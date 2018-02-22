@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core.paginator import Paginator
 from base import var as base_var
+import random
+
 
 def judgeStringWhite(input, chSet, maxlen = -1):
     if maxlen != -1:
@@ -37,3 +39,12 @@ def dividePage(reqGetList, input):
     except:
         back['pass'] = False
     return back
+
+
+def randomString(chSet, len):
+    strlen = str(chSet).__len__()
+    backString = ""
+    for i in range(0, len):
+        r = random.randint(0, strlen)
+        backString = backString + chSet[r]
+    return backString

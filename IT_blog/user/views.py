@@ -21,9 +21,18 @@ def register(request):
             list['inputUsername'] = username
             password = str(request.POST['password'])
             list['inputPassword'] = password
+            identify = str(request.POST['identify'])
+            if identify.upper() != str(request.session['identify']).upper():
+                list['message'] = u"验证码错误"
+                raise RuntimeError()
+            try:
+                del request.session['identify']
+            except:
+                pass
             passwordConfirm = str(request.POST['passwordConfirm'])
             result = func.judgeUsername(username) and func.judgePassword(password)
             if not result:
+                list['message'] = u"请用数字、字母、下划线作为用户名密码，并不少于六位不大于三十位"
                 raise RuntimeError()
             try:
                 get = user.objects.get(username=username)
@@ -38,7 +47,7 @@ def register(request):
                     newuser.save()
                     return redirect(reverse('login'))
         except RuntimeError:
-            list['message'] = u"请用数字、字母、下划线作为用户名密码，并不少于六位不大于三十位"
+            pass
     return render(request, 'register.html', list)
 
 
@@ -55,23 +64,33 @@ def login(request):
             list['inputUsername'] = username
             password = str(request.POST['password'])
             list['inputPassword'] = password
+            identify = str(request.POST['identify'])
+            if identify.upper() != str(request.session['identify']).upper():
+                list['message'] = u"验证码错误"
+                raise RuntimeError()
+            try:
+                del request.session['identify']
+            except:
+                pass
             result = func.judgeUsername(username) and func.judgePassword(password)
             if not result:
+                list['message'] = u"用户名或密码不正确"
                 raise RuntimeError()
             try:
                 get = user.objects.get(username=username)
                 logging.debug(get.username)
                 md5 = hashlib.md5(password.encode('utf-8')).hexdigest()
                 if md5 != get.password:
+                    list['message'] = u"用户名或密码不正确"
                     raise RuntimeError()
                 request.session['username'] = username
                 request.session['id'] = get.id
                 logging.debug(u'id为' + str(get.id) + u'的用户登录了')
                 return redirect(reverse('index'))
             except:
-                list['message'] = u"用户名或密码不正确"
+                pass
         except RuntimeError:
-            list['message'] = u"用户名或密码不正确"
+            pass
     return render(request, 'login.html', list)
 
 def logout(request):
