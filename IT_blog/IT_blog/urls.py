@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^deleteArticle/(\d+)/$', blog_views.deleteArticle, name='deleteArticle'),
     url(r'^identifyImg/$', base_views.identifyCodePicture, name='identifyImg'),
     url(r'^changePwd/$', user_views.changePwd, name='changePwd'),
+    url(r'^check/(?P<text>([a-z]|[A-Z]|\d)+)/$', user_views.registerCheck, name='registerCheck'),
 
     url(r'ckeditor/', include('ckeditor_uploader.urls')),
     url(r'^field/getModel/$', field_views.getModel, name='1'),

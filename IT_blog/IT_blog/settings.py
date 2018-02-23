@@ -92,9 +92,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'IT_blog',
-        'HOST': '',
-        'PORT': '',
-        'USER': '',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'USER': 'root',
         'PASSWORD': '',
     }
 }
@@ -147,3 +147,15 @@ CKEDITOR_CONFIGS = {
         'toolbar': 'full',
     },
 }
+
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = '@qq.com'
+#  你的 QQ 账号
+
+EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = True
+# 这里必须是 True，否则发送不成功
+
+EMAIL_FROM = '@qq.com'
+# 你的 QQ 账号

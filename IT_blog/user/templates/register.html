@@ -6,6 +6,7 @@
         用户名:<input type="text" maxlength="30" name="username" value="{{ inputUsername }}"><br>
         密码:<input type="password" maxlength="30" name="password" value="{{ inputPassword }}"><br>
         确认密码:<input type="password" maxlength="30" name="passwordConfirm"><br>
+        邮箱：<input type="email" maxlength="50" name="email" value="{{ inputEmail }}"><br>
         验证码：<input type="text" maxlength="4" name="identify"><img src="{% url 'identifyImg' %}" onclick="refresh()">
         <input type="submit" value="确认注册">
     </form>
