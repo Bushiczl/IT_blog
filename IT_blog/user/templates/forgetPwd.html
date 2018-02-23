@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method='post'>
+        {% csrf_token %}
+        用户名:<input type="text" maxlength="30" name="username" value="{{ inputUsername }}"><br>
+        邮箱:<input type="email" maxlength="50" name="email" value="{{ inputEmail }}"><br>
+        <input type="submit" value="提交">
+    </form>
+    {{ message }}
+    <a href="{% url 'login' %}"> 返回</a>
+{% endblock %}

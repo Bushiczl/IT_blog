@@ -172,3 +172,46 @@ def changePwd(request):
         except:
             pass
     return render(request, 'changePwd.html', list)
+
+
+def forgetPwd(request):
+    list = {}
+    list['message'] = ""
+    list['inputUsername'] = ""
+    list['inputEmail'] = ""
+    if request.method == 'POST':
+        try:
+            username = request.POST['username']
+            list['inputUsername'] = username
+            email = request.POST['email']
+            list['inputEmail'] = email
+            realEmail = user.objects.get(username=username).email
+            if email != realEmail:
+                list['message'] = u"你的邮箱不是这个"
+                raise RuntimeError()
+
+            text = base_func.randomString(base_var.chNum + base_var.chAlphaLow + base_var.chAlphaHigh, 30)
+            back = base_func.sendEmail(u"博客重置密码",
+                                       # 下面链接缺少域名，除此以外没问题
+                                       reverse('resetPwd', args=(text,)),
+                                       email)
+            if back:
+                request.session[text] = username
+                list['message'] = u"请在邮箱中点击链接重置密码为123456"
+            else:
+                list['message'] = u"邮件发送失败"
+                raise RuntimeError()
+        except:
+            pass
+    return render(request, 'forgetPwd.html', list)
+
+
+def resetPwd(request, text):
+    try:
+        username = request.session[text]
+        del request.session[text]
+        password = hashlib.md5('123456'.encode('utf-8')).hexdigest()
+        user.objects.filter(username=username).update(password=password)
+        return HttpResponse('<script>alert("重置密码成功");location="' + reverse('login') + '"</script>')
+    except:
+        return HttpResponse('<script>alert("未知错误，重置密码失败，请重试");location="' + reverse('login') + '"</script>')
